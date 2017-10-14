@@ -1,0 +1,33 @@
+{
+  "name": "gulp-fed-starter",
+  "version": "1.0.0",
+  "description": "helper with new project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Qdzejdzej/Gulp-starter.git"
+  },
+  "author": "Mateusz Kujawski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Qdzejdzej/Gulp-starter/issues"
+  },
+  "homepage": "https://github.com/Qdzejdzej/Gulp-starter#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.13",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-babili": "^0.1.4",
+    "gulp-cache": "^0.4.6",
+    "gulp-concat": "^2.6.1",
+    "gulp-imagemin": "^3.4.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-useref": "^3.1.2",
+    "gulp-util": "^3.0.8",
+    "run-sequence": "^2.2.0"
+  }
+}
