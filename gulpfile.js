@@ -1,3 +1,5 @@
+'use strict';
+
 var srcInput      = 'src/',
     srcOutput     = 'public/',
     gulp          = require('gulp'),
@@ -11,6 +13,7 @@ var srcInput      = 'src/',
     concat        = require('gulp-concat'),
     del           = require('del'),
     runSequence   = require('run-sequence'),
+    babel         = require('gulp-babel'),
     autoprefixer  = require('gulp-autoprefixer');
 
 const babili = require("gulp-babili");
@@ -20,7 +23,7 @@ gulp.task('sass', function () {
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
-      browsers: ['last 2 versions', 'IE 9', 'Firefox > 20', 'iOS 7', 'Safari 5', 'Android 4'],
+      browsers: ['last 2 version', 'safari 5', 'ie 9', 'ff 17', 'opera 12.1', 'ios 6', 'android 4'],
       cascade: false
     }))
     .pipe(cssmin())
@@ -53,6 +56,9 @@ gulp.task('fonts', function () {
 gulp.task('scripts', function () {
   return gulp.src([srcInput + 'js/**/*.js'])
     .pipe(concat('main.min.js'))
+    .pipe(babel({
+            presets: ['env']
+    }))
     .pipe(babili({
       mangle: {
         keepClassNames: true
