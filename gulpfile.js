@@ -11,7 +11,6 @@ var srcInput      = 'src/',
     concat        = require('gulp-concat'),
     del           = require('del'),
     runSequence   = require('run-sequence'),
-    // sassLint      = require('gulp-sass-lint'),
     autoprefixer  = require('gulp-autoprefixer');
 
 const babili = require("gulp-babili");
@@ -20,7 +19,6 @@ gulp.task('sass', function () {
   return gulp.src(srcInput + 'sass/**/*.+(sass|scss)')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    // .pipe(sassLint())
     .pipe(autoprefixer({
       browsers: ['last 2 versions', 'IE 9', 'Firefox > 20', 'iOS 7', 'Safari 5', 'Android 4'],
       cascade: false
