@@ -11,7 +11,10 @@ var srcInput      = 'src/',
     concat        = require('gulp-concat'),
     del           = require('del'),
     runSequence   = require('run-sequence'),
+<<<<<<< HEAD
     // sassLint      = require('gulp-sass-lint'),
+=======
+>>>>>>> ff867ce29f57806bab2f979b751ed45a36ed9cc6
     autoprefixer  = require('gulp-autoprefixer');
 
 const babili = require("gulp-babili");
@@ -20,7 +23,10 @@ gulp.task('sass', function () {
   return gulp.src(srcInput + 'sass/**/*.+(sass|scss)')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
+<<<<<<< HEAD
     // .pipe(sassLint())
+=======
+>>>>>>> ff867ce29f57806bab2f979b751ed45a36ed9cc6
     .pipe(autoprefixer({
       browsers: ['last 2 versions', 'IE 9', 'Firefox > 20', 'iOS 7', 'Safari 5', 'Android 4'],
       cascade: false
