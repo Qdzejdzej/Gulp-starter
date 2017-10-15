@@ -1,79 +1,100 @@
-var gulp = require('gulp'),
-    sass = require('gulp-sass'),
-    sourcemaps = require('gulp-sourcemaps'),
-    browserSync = require('browser-sync').create(),
-    imagemin = require('gulp-imagemin'),
-    cache = require('gulp-cache'),
-    gutil = require('gulp-util'),
-    concat = require('gulp-concat'),
-    del = require('del'),
-    runSequence = require('run-sequence');
+var srcInput      = 'src/',
+    srcOutput     = 'public/',
+    gulp          = require('gulp'),
+    sass          = require('gulp-sass'),
+    cssmin        = require('gulp-cssmin'),
+    sourcemaps    = require('gulp-sourcemaps'),
+    browserSync   = require('browser-sync').create(),
+    imagemin      = require('gulp-imagemin'),
+    cache         = require('gulp-cache'),
+    gutil         = require('gulp-util'),
+    concat        = require('gulp-concat'),
+    del           = require('del'),
+    runSequence   = require('run-sequence'),
+    // sassLint      = require('gulp-sass-lint'),
+    autoprefixer  = require('gulp-autoprefixer');
 
 const babili = require("gulp-babili");
 
 gulp.task('sass', function () {
-  return gulp.src('src/sass/**/*.sass')
+  return gulp.src(srcInput + 'sass/**/*.+(sass|scss)')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    .pipe(sourcemaps.write('./maps'))
-    .pipe(gulp.dest('public/css'))
+    // .pipe(sassLint())
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions', 'IE 9', 'Firefox > 20', 'iOS 7', 'Safari 5', 'Android 4'],
+      cascade: false
+    }))
+    .pipe(cssmin())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest(srcOutput + 'css'))
     .pipe(browserSync.reload({
       stream: true
     }))
 });
 
 gulp.task('images', function () {
-  return gulp.src('src/img/**/*.+(png|jpg|jpeg|gif|svg)')
-  .pipe(cache(imagemin({
-    interlaced: true
-   })))
-  .pipe(gulp.dest('public/images'))
-  .pipe(browserSync.reload({
-    stream: true
-  }))
+  return gulp.src(srcInput + 'img/**/*.+(png|jpg|jpeg|gif|svg)')
+    .pipe(cache.clear())
+    .pipe(imagemin({
+      optimizationLevel: 5,
+      progressive: true,
+      interlaced: true
+    }))
+    .pipe(gulp.dest(srcOutput + 'images'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 });
 
 gulp.task('fonts', function () {
-  return gulp.src('src/fonts/**/*')
-  .pipe(gulp.dest('public/fonts'))
+  return gulp.src(srcInput + 'fonts/**/*')
+    .pipe(gulp.dest(srcOutput + 'fonts'))
 })
 
 gulp.task('scripts', function () {
-  return gulp.src(['src/js/*.js'])
-  .pipe(concat('main.min.js'))
-  .pipe(babili({
-    mangle: {
-      keepClassNames: true
-    }
-  }))
-  .on('error', function (err) {
-    gutil.log(gutil.colors.red('[Error]'), err.toString());
-  })
-  .pipe(gulp.dest('public/js'))
-  .pipe(browserSync.reload({
-    stream: true
-  }))
+  return gulp.src([srcInput + 'js/**/*.js'])
+    .pipe(concat('main.min.js'))
+    .pipe(babili({
+      mangle: {
+        keepClassNames: true
+      }
+    }))
+    .on('error', function (err) {
+      gutil.log(gutil.colors.red('[Error]'), err.toString());
+    })
+    .pipe(gulp.dest(srcOutput + 'js'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 })
 
-gulp.task('clean:dist', () => {
-  return del.sync('dist');
+gulp.task('clean', () => {
+  return del.sync(srcOutput);
 })
 
 gulp.task('browserSync', function () {
   browserSync.init({
     server: {
-    baseDir: 'public'
+    baseDir: './'
     },
   })
 })
 
+gulp.task('watch', ['browserSync', 'sass', 'scripts', 'fonts', 'images'], () => {
+  gulp.watch(srcInput + 'sass/**/*.+(sass|scss)', ['sass']);
+  gulp.watch(srcInput + 'img/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
+  gulp.watch(srcInput + 'fonts/**/*', ['fonts']);
+  gulp.watch(srcInput + 'js/**/*.js', ['scripts']);
+});
+
 gulp.task('default', function (callback) {
-  runSequence(['watch', 'sass', 'browserSync'],
+  runSequence(['clean', 'watch',  'browserSync'],
     callback
   )
 })
 
-gulp.task('build', function (callback) {
-   runSequence('clean:dist', ['default', 'images', 'fonts'], 'useref', 'scripts',
-     callback)
-})
+// gulp.task('build', function (callback) {
+//    runSequence('clean', ['default', 'images', 'fonts'], 'useref', 'scripts',
+//      callback)
+// })
