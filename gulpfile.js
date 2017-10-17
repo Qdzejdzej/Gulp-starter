@@ -14,6 +14,7 @@ var srcInput      = 'src/',
     del           = require('del'),
     runSequence   = require('run-sequence'),
     babel         = require('gulp-babel'),
+    pug           = require('gulp-pug'),
     autoprefixer  = require('gulp-autoprefixer');
 
 const babili = require("gulp-babili");
@@ -64,32 +65,45 @@ gulp.task('scripts', function () {
         keepClassNames: true
       }
     }))
-    .on('error', function (err) {
-      gutil.log(gutil.colors.red('[Error]'), err.toString());
-    })
     .pipe(gulp.dest(srcOutput + 'js'))
     .pipe(browserSync.reload({
       stream: true
     }))
 })
 
-gulp.task('clean', () => {
+gulp.task('pug', function() {
+  return gulp.src(srcInput + 'pug/**/*.pug')
+    .pipe(pug({
+      pretty: true
+    }))
+    .on('error', function (err) {
+      gutil.log(gutil.colors.red('[Error]'), err.toString());
+    })
+    .pipe(gulp.dest(srcOutput + 'templates'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
+})
+
+gulp.task('clean', function() {
   return del.sync(srcOutput);
 })
 
 gulp.task('browserSync', function () {
   browserSync.init({
     server: {
-    baseDir: './'
+    baseDir: './public/',
+    directory: true
     },
   })
 })
 
-gulp.task('watch', ['browserSync', 'sass', 'scripts', 'fonts', 'images'], () => {
+gulp.task('watch', ['browserSync', 'sass', 'scripts', 'fonts', 'pug', 'images'], () => {
   gulp.watch(srcInput + 'sass/**/*.+(sass|scss)', ['sass']);
   gulp.watch(srcInput + 'img/**/*.+(png|jpg|jpeg|gif|svg)', ['images']);
   gulp.watch(srcInput + 'fonts/**/*', ['fonts']);
   gulp.watch(srcInput + 'js/**/*.js', ['scripts']);
+  gulp.watch(srcInput + 'pug/**/*.pug', ['pug']);
 });
 
 gulp.task('default', function (callback) {
