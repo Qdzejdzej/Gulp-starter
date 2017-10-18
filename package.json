@@ -4,7 +4,8 @@
   "description": "helper with new project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "start watch"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "gulp-imagemin": "^3.4.0",
     "gulp-js-minify": "0.0.3",
     "gulp-notify": "^3.0.0",
+    "gulp-plumber": "^1.1.0",
     "gulp-pug": "^3.3.0",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.1",

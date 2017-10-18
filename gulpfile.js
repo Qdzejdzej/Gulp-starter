@@ -12,7 +12,8 @@ var srcInput      = 'src/',
     concat        = require('gulp-concat'),
     babel         = require('gulp-babel'),
     notify        = require("gulp-notify"),
-    minifyjs      = require('gulp-js-minify').
+    minifyjs      = require('gulp-js-minify'),
+    plumber       = require('gulp-plumber'),
     pug           = require('gulp-pug'),
     runSequence   = require('run-sequence'),
     del           = require('del'),
@@ -20,6 +21,7 @@ var srcInput      = 'src/',
 
 gulp.task('sass', function () {
   return gulp.src(srcInput + 'sass/**/*.+(sass|scss)')
+    .pipe(plumber())
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
@@ -36,6 +38,7 @@ gulp.task('sass', function () {
 
 gulp.task('images', function () {
   return gulp.src(srcInput + 'img/**/*.+(png|jpg|jpeg|gif|svg)')
+    .pipe(plumber())
     .pipe(imagemin({
       optimizationLevel: 5,
       progressive: true,
@@ -49,17 +52,19 @@ gulp.task('images', function () {
 
 gulp.task('fonts', function () {
   return gulp.src(srcInput + 'fonts/**/*')
+    .pipe(plumber())
     .pipe(gulp.dest(srcOutput + 'fonts'))
 })
 
 gulp.task('scripts', function () {
   return gulp.src([srcInput + 'js/**/*.js'])
-    .pipe(concat('main.min.js'))
+    .pipe(plumber())
     .pipe(babel({
         presets: ['env']
     }))
     .pipe(minifyjs())
     .on("error", notify.onError("Error: <%= error.message %>"))
+    .pipe(concat('main.min.js'))
     .pipe(gulp.dest(srcOutput + 'js'))
     .pipe(browserSync.reload({
       stream: true
@@ -68,6 +73,7 @@ gulp.task('scripts', function () {
 
 gulp.task('pug', function() {
   return gulp.src(srcInput + 'pug/**/*.pug')
+    .pipe(plumber())
     .pipe(pug({
       pretty: true
     }))
@@ -79,7 +85,7 @@ gulp.task('pug', function() {
 })
 
 gulp.task('clean', function() {
-  return del.sync(srcOutput);
+  return del.sync(srcOutput)
 })
 
 gulp.task('browserSync', function () {
@@ -100,7 +106,7 @@ gulp.task('watch', ['browserSync', 'sass', 'scripts', 'fonts', 'pug', 'images'],
 });
 
 gulp.task('default', function (callback) {
-  runSequence(['clean', 'watch',  'browserSync'],
+  runSequence('clean', ['watch',  'browserSync'],
     callback
   )
 })
