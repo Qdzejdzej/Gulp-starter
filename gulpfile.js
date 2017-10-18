@@ -5,19 +5,18 @@ var srcInput      = 'src/',
     gulp          = require('gulp'),
     sass          = require('gulp-sass'),
     cssmin        = require('gulp-cssmin'),
+    autoprefixer  = require('gulp-autoprefixer'),
     sourcemaps    = require('gulp-sourcemaps'),
-    browserSync   = require('browser-sync').create(),
     imagemin      = require('gulp-imagemin'),
-    cache         = require('gulp-cache'),
     gutil         = require('gulp-util'),
     concat        = require('gulp-concat'),
-    del           = require('del'),
-    runSequence   = require('run-sequence'),
     babel         = require('gulp-babel'),
+    notify        = require("gulp-notify"),
+    minifyjs      = require('gulp-js-minify').
     pug           = require('gulp-pug'),
-    autoprefixer  = require('gulp-autoprefixer');
-
-const babili = require("gulp-babili");
+    runSequence   = require('run-sequence'),
+    del           = require('del'),
+    browserSync   = require('browser-sync').create();
 
 gulp.task('sass', function () {
   return gulp.src(srcInput + 'sass/**/*.+(sass|scss)')
@@ -37,13 +36,12 @@ gulp.task('sass', function () {
 
 gulp.task('images', function () {
   return gulp.src(srcInput + 'img/**/*.+(png|jpg|jpeg|gif|svg)')
-    .pipe(cache.clear())
     .pipe(imagemin({
       optimizationLevel: 5,
       progressive: true,
       interlaced: true
     }))
-    .pipe(gulp.dest(srcOutput + 'images'))
+    .pipe(gulp.dest(srcOutput + 'img'))
     .pipe(browserSync.reload({
       stream: true
     }))
@@ -58,13 +56,10 @@ gulp.task('scripts', function () {
   return gulp.src([srcInput + 'js/**/*.js'])
     .pipe(concat('main.min.js'))
     .pipe(babel({
-            presets: ['env']
+        presets: ['env']
     }))
-    .pipe(babili({
-      mangle: {
-        keepClassNames: true
-      }
-    }))
+    .pipe(minifyjs())
+    .on("error", notify.onError("Error: <%= error.message %>"))
     .pipe(gulp.dest(srcOutput + 'js'))
     .pipe(browserSync.reload({
       stream: true
@@ -76,9 +71,7 @@ gulp.task('pug', function() {
     .pipe(pug({
       pretty: true
     }))
-    .on('error', function (err) {
-      gutil.log(gutil.colors.red('[Error]'), err.toString());
-    })
+    .on("error", notify.onError("Error: <%= error.message %>"))
     .pipe(gulp.dest(srcOutput + 'templates'))
     .pipe(browserSync.reload({
       stream: true
@@ -92,9 +85,9 @@ gulp.task('clean', function() {
 gulp.task('browserSync', function () {
   browserSync.init({
     server: {
-    baseDir: './public/',
-    directory: true
+      baseDir: './public/'
     },
+    startPath: '/templates'
   })
 })
 
