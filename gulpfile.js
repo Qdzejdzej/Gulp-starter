@@ -4,6 +4,7 @@ var srcInput      = 'src/',
     srcOutput     = 'public/',
     gulp          = require('gulp'),
     sass          = require('gulp-sass'),
+    sassLint      = require('gulp-sass-lint'),
     cssmin        = require('gulp-cssmin'),
     autoprefixer  = require('gulp-autoprefixer'),
     sourcemaps    = require('gulp-sourcemaps'),
@@ -22,6 +23,11 @@ gulp.task('sass', function () {
   return gulp.src(srcInput + 'sass/**/*.+(sass|scss)')
     .pipe(plumber())
     .pipe(sourcemaps.init())
+    .pipe(sassLint({
+       configFile: '.sass-lint.yml'
+     }))
+    .pipe(sassLint.format())
+    .pipe(sassLint.failOnError())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
       browsers: ['last 2 version', 'safari 5', 'ie 9', 'ff 17', 'opera 12.1', 'ios 6', 'android 4'],
